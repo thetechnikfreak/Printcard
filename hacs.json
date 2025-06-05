@@ -1,0 +1,7 @@
+{
+"name": "Printwatch Card",
+"description": "A custom Home Assistant card for monitoring 3D printer status",
+"render_readme": true,
+"country": [US, DE, GB, FR, ES, IT, NL, SE, NO, DK, FI, BE, AT, CH, PL, CZ, SK, HU, RO, BG, HR, SI, LT, LV, EE],
+"homeassistant": "2024.1.0"
+}

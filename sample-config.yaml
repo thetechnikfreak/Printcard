@@ -1,0 +1,35 @@
+# Sample configuration for Printwatch Card
+# Copy this configuration to your Home Assistant dashboard
+
+type: custom:printwatch-card
+printer_name: P1S
+camera_refresh_rate: 1000
+print_status_entity: sensor.none_print_status
+task_name_entity: sensor.none_file
+progress_entity: sensor.none_job_percentage
+current_layer_entity: sensor.none_print_layer
+bed_temp_entity: sensor.drucker_bed_current
+bed_target_temp_entity: sensor.drucker_bed_target
+camera_entity: camera.192_168_188_88
+pause_button_entity: button.none_pause
+resume_button_entity: button.none_continue
+stop_button_entity: button.none_abort
+chamber_light_entity: light.p1s_chamber_light
+
+# Additional configuration examples:
+
+# For multiple printers, create separate cards:
+# ---
+# type: custom:printwatch-card
+# printer_name: "Printer 2"
+# print_status_entity: sensor.printer2_print_status
+# task_name_entity: sensor.printer2_file
+# progress_entity: sensor.printer2_job_percentage
+# current_layer_entity: sensor.printer2_print_layer
+# bed_temp_entity: sensor.printer2_bed_current
+# bed_target_temp_entity: sensor.printer2_bed_target
+# camera_entity: camera.printer2_camera
+# pause_button_entity: button.printer2_pause
+# resume_button_entity: button.printer2_continue
+# stop_button_entity: button.printer2_abort
+# chamber_light_entity: light.printer2_chamber_light
