@@ -1,5 +1,9 @@
-// Printwatch Card - A custom Home Assistant card for 3D printer monitoring
-// Version: 1.0.0
+/**
+ * @fileoverview Printwatch Card - A custom Home Assistant card for 3D printer monitoring
+ * @version 1.0.0
+ * @author GitHub User
+ * @license MIT
+ */
 
 class PrintwatchCard extends HTMLElement {
   constructor() {
@@ -440,7 +444,9 @@ class PrintwatchCard extends HTMLElement {
   }
 }
 
-// Card Editor
+customElements.define('printwatch-card', PrintwatchCard);
+
+// Card Editor Class
 class PrintwatchCardEditor extends HTMLElement {
   constructor() {
     super();
@@ -666,8 +672,6 @@ class PrintwatchCardEditor extends HTMLElement {
   }
 }
 
-// Register the custom elements
-customElements.define('printwatch-card', PrintwatchCard);
 customElements.define('printwatch-card-editor', PrintwatchCardEditor);
 
 // Register the card with Home Assistant
