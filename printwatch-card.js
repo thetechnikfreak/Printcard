@@ -222,15 +222,22 @@ class PrintwatchCard extends HTMLElement {
         .control-button.stop {
           background: var(--error-color, #f44336);
           color: white;
-        }
-          .control-button.light {
+        }        .control-button.light {
           background: var(--info-color, #2196f3);
           color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
         }
         
         .control-button.power {
           background: var(--primary-color, #673ab7);
           color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
         }
         
         .control-button.power.on {
@@ -239,6 +246,23 @@ class PrintwatchCard extends HTMLElement {
         
         .control-button.power.off {
           background: var(--error-color, #f44336);
+        }
+        
+        .icon {
+          width: 16px;
+          height: 16px;
+          fill: currentColor;
+        }
+        
+        .offline-mode .info-grid,
+        .offline-mode .progress-container,
+        .offline-mode .camera-section,
+        .offline-mode .control-button:not(.power) {
+          display: none !important;
+        }
+        
+        .offline-mode .controls {
+          justify-content: center;
         }
         
         .control-button:hover {
@@ -315,13 +339,22 @@ class PrintwatchCard extends HTMLElement {
               <div class="progress-fill" id="progress-fill"></div>
             </div>
             <div class="info-value" id="progress-text">0%</div>
-          </div>
-            <div class="controls">
+          </div>          <div class="controls">
             <button class="control-button pause" id="pause-btn">Pause</button>
             <button class="control-button resume" id="resume-btn">Resume</button>
             <button class="control-button stop" id="stop-btn">Stop</button>
-            <button class="control-button light" id="light-btn">Light</button>
-            <button class="control-button power" id="power-btn">Power</button>
+            <button class="control-button light" id="light-btn">
+              <svg class="icon" viewBox="0 0 24 24">
+                <path d="M9,21C9,21.5 9.4,22 10,22H14C14.6,22 15,21.5 15,21V20H9V21M12,2C8.1,2 5,5.1 5,9C5,11.4 6.2,13.5 8,14.7V17C8,17.5 8.4,18 9,18H15C15.6,18 16,17.5 16,17V14.7C17.8,13.5 19,11.4 19,9C19,5.1 15.9,2 12,2Z" />
+              </svg>
+              <span id="light-text">Light</span>
+            </button>
+            <button class="control-button power" id="power-btn">
+              <svg class="icon" viewBox="0 0 24 24">
+                <path d="M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13" />
+              </svg>
+              <span id="power-text">Power</span>
+            </button>
           </div>
         </div>
       </div>
@@ -384,9 +417,22 @@ class PrintwatchCard extends HTMLElement {
       });
     }
   }
-
   updateContent() {
     if (!this.hass || !this.config) return;
+
+    // Check if printer is offline by looking at power switch state
+    const powerEntity = this.hass.states[this.config.power_switch_entity];
+    const isOffline = !powerEntity || powerEntity.state === 'off';
+
+    // Get the card container to toggle offline mode
+    const cardContainer = this.shadowRoot.querySelector('.card-container');
+    if (cardContainer) {
+      if (isOffline) {
+        cardContainer.classList.add('offline-mode');
+      } else {
+        cardContainer.classList.remove('offline-mode');
+      }
+    }
 
     // Update status
     const statusEl = this.shadowRoot.getElementById('status');
@@ -435,19 +481,34 @@ class PrintwatchCard extends HTMLElement {
       bedTargetEl.textContent = `${bedTargetEntity.state}°C`;
     }
 
-    // Update camera
-    this.updateCameraImage();    // Update light button state
+    // Update camera (only if online)
+    if (!isOffline) {
+      this.updateCameraImage();
+    }
+
+    // Update light button state
     const lightBtn = this.shadowRoot.getElementById('light-btn');
     const lightEntity = this.hass.states[this.config.chamber_light_entity];
     if (lightEntity && lightBtn) {
-      lightBtn.textContent = lightEntity.state === 'on' ? 'Light Off' : 'Light On';
+      const isLightOn = lightEntity.state === 'on';
+      lightBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24">
+          <path d="M9,21C9,22.1 9.9,23 11,23H13C14.1,23 15,22.1 15,21V20H9V21M12,2A7,7 0 0,0 5,9C5,11.38 6.19,13.47 8,14.74V17A1,1 0 0,0 9,18H15A1,1 0 0,0 16,17V14.74C17.81,13.47 19,11.38 19,9A7,7 0 0,0 12,2Z" fill="currentColor"/>
+        </svg>
+        ${isLightOn ? 'Light Off' : 'Light On'}
+      `;
     }
 
     // Update power button state
     const powerBtn = this.shadowRoot.getElementById('power-btn');
-    const powerEntity = this.hass.states[this.config.power_switch_entity];
     if (powerEntity && powerBtn) {
-      powerBtn.textContent = powerEntity.state === 'on' ? 'Power Off' : 'Power On';
+      const isPowerOn = powerEntity.state === 'on';
+      powerBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24">
+          <path d="M16.56,5.44L15.11,6.89C16.84,7.94 18,9.83 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12C6,9.83 7.16,7.94 8.88,6.88L7.44,5.44C5.36,6.88 4,9.28 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12C20,9.28 18.64,6.88 16.56,5.44M13,3H11V13H13" fill="currentColor"/>
+        </svg>
+        ${isPowerOn ? 'Power Off' : 'Power On'}
+      `;
       powerBtn.className = `control-button power ${powerEntity.state}`;
     }
   }

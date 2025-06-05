@@ -1,5 +1,37 @@
 # Printwatch Card - Release Notes
 
+## Version 1.0.2 (2025-01-19)
+
+### Offline Mode Implementation
+
+**Features:**
+- ✅ **Complete Offline Mode:** Card now properly detects when printer is offline based on power switch state
+- 🔧 **Smart Element Hiding:** When offline, only the power switch remains visible, all other controls are hidden
+- 📱 **Improved UI:** Better visual feedback for offline vs online states
+- 🎛️ **Enhanced Power Control:** Power button properly centered when printer is offline
+
+**Technical Improvements:**
+- Fixed `updateContent()` method to handle offline detection
+- Added proper CSS class toggling for offline mode
+- Prevented camera updates when printer is offline
+- Maintained icon support for power and light buttons
+
+## Version 1.0.1 (2025-01-19)
+
+### Power Switch & Icon Enhancement
+
+**Features:**
+- ⚡ **Power Switch Integration:** Added configurable power switch entity for complete printer control
+- 🎨 **Button Icons:** Added SVG icons to light and power buttons for better visual identification
+- 🟢 **Dynamic Button Colors:** Power button changes color (green/red) based on on/off state
+- 🔧 **Enhanced Configuration:** Updated configuration options and documentation for power switch
+
+**Technical Improvements:**
+- Added `togglePower()` method for power switch control
+- Implemented proper icon rendering with SVG paths
+- Updated button HTML structure with flexbox layout
+- Enhanced CSS for icon styling and responsive design
+
 ## Version 1.0.0 (2025-06-05)
 
 ### Initial Release
