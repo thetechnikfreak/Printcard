@@ -56,6 +56,7 @@ pause_button_entity: button.none_pause
 resume_button_entity: button.none_continue
 stop_button_entity: button.none_abort
 chamber_light_entity: light.p1s_chamber_light
+power_switch_entity: switch.p1s_power
 ```
 
 ## Configuration Options
@@ -75,6 +76,7 @@ chamber_light_entity: light.p1s_chamber_light
 | `resume_button_entity` | string | Yes | Entity ID for resume button |
 | `stop_button_entity` | string | Yes | Entity ID for stop button |
 | `chamber_light_entity` | string | Yes | Entity ID for chamber light |
+| `power_switch_entity` | string | Yes | Entity ID for printer power switch |
 
 ## License
 

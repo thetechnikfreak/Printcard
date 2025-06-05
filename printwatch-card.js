@@ -223,10 +223,22 @@ class PrintwatchCard extends HTMLElement {
           background: var(--error-color, #f44336);
           color: white;
         }
-        
-        .control-button.light {
+          .control-button.light {
           background: var(--info-color, #2196f3);
           color: white;
+        }
+        
+        .control-button.power {
+          background: var(--primary-color, #673ab7);
+          color: white;
+        }
+        
+        .control-button.power.on {
+          background: var(--success-color, #4caf50);
+        }
+        
+        .control-button.power.off {
+          background: var(--error-color, #f44336);
         }
         
         .control-button:hover {
@@ -304,12 +316,12 @@ class PrintwatchCard extends HTMLElement {
             </div>
             <div class="info-value" id="progress-text">0%</div>
           </div>
-          
-          <div class="controls">
+            <div class="controls">
             <button class="control-button pause" id="pause-btn">Pause</button>
             <button class="control-button resume" id="resume-btn">Resume</button>
             <button class="control-button stop" id="stop-btn">Stop</button>
             <button class="control-button light" id="light-btn">Light</button>
+            <button class="control-button power" id="power-btn">Power</button>
           </div>
         </div>
       </div>
@@ -318,12 +330,12 @@ class PrintwatchCard extends HTMLElement {
     this.setupEventListeners();
     this.updateContent();
   }
-
   setupEventListeners() {
     const pauseBtn = this.shadowRoot.getElementById('pause-btn');
     const resumeBtn = this.shadowRoot.getElementById('resume-btn');
     const stopBtn = this.shadowRoot.getElementById('stop-btn');
     const lightBtn = this.shadowRoot.getElementById('light-btn');
+    const powerBtn = this.shadowRoot.getElementById('power-btn');
 
     pauseBtn?.addEventListener('click', () => {
       this.callService('button', 'press', this.config.pause_button_entity);
@@ -340,6 +352,10 @@ class PrintwatchCard extends HTMLElement {
     lightBtn?.addEventListener('click', () => {
       this.toggleLight();
     });
+
+    powerBtn?.addEventListener('click', () => {
+      this.togglePower();
+    });
   }
 
   callService(domain, service, entityId) {
@@ -349,13 +365,22 @@ class PrintwatchCard extends HTMLElement {
       });
     }
   }
-
   toggleLight() {
     if (this.hass && this.config.chamber_light_entity) {
       const entity = this.hass.states[this.config.chamber_light_entity];
       const service = entity?.state === 'on' ? 'turn_off' : 'turn_on';
       this.hass.callService('light', service, {
         entity_id: this.config.chamber_light_entity
+      });
+    }
+  }
+
+  togglePower() {
+    if (this.hass && this.config.power_switch_entity) {
+      const entity = this.hass.states[this.config.power_switch_entity];
+      const service = entity?.state === 'on' ? 'turn_off' : 'turn_on';
+      this.hass.callService('switch', service, {
+        entity_id: this.config.power_switch_entity
       });
     }
   }
@@ -411,20 +436,25 @@ class PrintwatchCard extends HTMLElement {
     }
 
     // Update camera
-    this.updateCameraImage();
-
-    // Update light button state
+    this.updateCameraImage();    // Update light button state
     const lightBtn = this.shadowRoot.getElementById('light-btn');
     const lightEntity = this.hass.states[this.config.chamber_light_entity];
     if (lightEntity && lightBtn) {
       lightBtn.textContent = lightEntity.state === 'on' ? 'Light Off' : 'Light On';
+    }
+
+    // Update power button state
+    const powerBtn = this.shadowRoot.getElementById('power-btn');
+    const powerEntity = this.hass.states[this.config.power_switch_entity];
+    if (powerEntity && powerBtn) {
+      powerBtn.textContent = powerEntity.state === 'on' ? 'Power Off' : 'Power On';
+      powerBtn.className = `control-button power ${powerEntity.state}`;
     }
   }
 
   static getConfigElement() {
     return document.createElement('printwatch-card-editor');
   }
-
   static getStubConfig() {
     return {
       printer_name: 'P1S',
@@ -439,7 +469,8 @@ class PrintwatchCard extends HTMLElement {
       pause_button_entity: 'button.none_pause',
       resume_button_entity: 'button.none_continue',
       stop_button_entity: 'button.none_abort',
-      chamber_light_entity: 'light.p1s_chamber_light'
+      chamber_light_entity: 'light.p1s_chamber_light',
+      power_switch_entity: 'switch.p1s_power'
     };
   }
 }
@@ -636,14 +667,23 @@ class PrintwatchCardEditor extends HTMLElement {
             placeholder="button.none_abort"
           />
         </div>
-        
-        <div class="config-group">
+          <div class="config-group">
           <label for="chamber_light_entity">Chamber Light Entity *</label>
           <input 
             type="text" 
             id="chamber_light_entity" 
             value="${this.config?.chamber_light_entity || ''}"
             placeholder="light.p1s_chamber_light"
+          />
+        </div>
+        
+        <div class="config-group">
+          <label for="power_switch_entity">Power Switch Entity *</label>
+          <input 
+            type="text" 
+            id="power_switch_entity" 
+            value="${this.config?.power_switch_entity || ''}"
+            placeholder="switch.p1s_power"
           />
         </div>
       </div>

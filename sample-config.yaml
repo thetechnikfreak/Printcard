@@ -15,6 +15,7 @@ pause_button_entity: button.none_pause
 resume_button_entity: button.none_continue
 stop_button_entity: button.none_abort
 chamber_light_entity: light.p1s_chamber_light
+power_switch_entity: switch.p1s_power
 
 # Additional configuration examples:
 
